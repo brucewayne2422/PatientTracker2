@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PatientTracker</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .login-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: url('C:/Users/msi/Desktop/PatientTracker/doctor logo') no-repeat center center fixed;
+            background-size: 150px; /* Adjust size as needed */
+            background-color: #e6f7ff; /* Light blue background */
+        }
+
+        .login-container {
+            background: url('C:/Users/msi/Desktop/PatientTracker/ShSMCH') no-repeat top center;
+            background-size: contain;
+            text-align: center;
+            padding-top: 150px;
+        }
+
+        .login-container h1 {
+            margin-top: 10px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .login-container p {
+            font-size: 20px;
+            color: #555;
+            margin: 10px 0;
+        }
+
+        .login-container input {
+            margin-top: 20px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-screen">
+        <div class="login-container">
+            <h1>Shaheed Suhrawardy Medical College Hospital</h1>
+            <p>PatientTracker</p>
+            <input type="password" id="masterPassword" placeholder="Enter Master Password">
+            <button onclick="login()">Login</button>
+            <button onclick="showChangePassword()">Change Password</button>
+        </div>
+        <div class="change-password hidden">
+            <h2>Change Password</h2>
+            <input type="password" id="masterCode" placeholder="Enter Master Code (2422)">
+            <input type="password" id="newPassword" placeholder="Enter New Password">
+            <button onclick="changePassword()">Submit</button>
+        </div>
+    </div>
+
+    <div class="dashboard" style="display: none;">
+        <h1>PatientTracker Dashboard</h1>
+
+        <div class="form-container">
+            <h2>Add/Update Patient</h2>
+            <form id="patientForm">
+                <input type="text" id="name" placeholder="Patient Name" required>
+                <input type="number" id="age" placeholder="Age" required>
+                <select id="gender">
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+                <input type="text" id="ward" placeholder="Ward" required>
+                <input type="text" id="bed" placeholder="Bed" required>
+                <input type="date" id="admissionDate" required>
+                <input type="text" id="diagnosis" placeholder="Diagnosis" required>
+                <input type="text" id="plan" placeholder="Plan">
+                <input type="date" id="followUp">
+                <textarea id="notes" placeholder="Notes"></textarea>
+                <input type="text" id="doctor" placeholder="Doctor">
+                <button type="button" onclick="addPatient()">Save</button>
+            </form>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Gender</th>
+                    <th>Ward</th>
+                    <th>Bed</th>
+                    <th>Date of Admission</th>
+                    <th>Diagnosis</th>
+                    <th>Plan</th>
+                    <th>Follow Up</th>
+                    <th>Notes</th>
+                    <th>Doctor</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="patientTableBody">
+                <!-- Patient data rows will be added here dynamically -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        let MASTER_PASSWORD = "3333";
+
+        function login() {
+            const password = document.getElementById('masterPassword').value;
+            if (password === MASTER_PASSWORD) {
+                document.querySelector('.login-screen').style.display = 'none';
+                document.querySelector('.dashboard').style.display = 'block';
+            } else {
+                alert('Invalid Password');
+            }
+        }
+
+        function showChangePassword() {
+            document.querySelector('.login-container').classList.add('hidden');
+            document.querySelector('.change-password').classList.remove('hidden');
+        }
+
+        function changePassword() {
+            const masterCode = document.getElementById('masterCode').value;
+            const newPassword = document.getElementById('newPassword').value;
+
+            if (masterCode === "2422") {
+                MASTER_PASSWORD = newPassword;
+                alert('Password changed successfully!');
+                document.querySelector('.change-password').classList.add('hidden');
+                document.querySelector('.login-container').classList.remove('hidden');
+            } else {
+                alert('Invalid Master Code');
+            }
+        }
+
+        function addPatient() {
+            const form = document.getElementById('patientForm');
+            const tableBody = document.getElementById('patientTableBody');
+
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>${document.getElementById('name').value}</td>
+                <td>${document.getElementById('age').value}</td>
+                <td>${document.getElementById('gender').value}</td>
+                <td>${document.getElementById('ward').value}</td>
+                <td>${document.getElementById('bed').value}</td>
+                <td>${document.getElementById('admissionDate').value}</td>
+                <td>${document.getElementById('diagnosis').value}</td>
+                <td>${document.getElementById('plan').value}</td>
+                <td>${document.getElementById('followUp').value}</td>
+                <td>${document.getElementById('notes').value}</td>
+                <td>${document.getElementById('doctor').value}</td>
+                <td><button onclick="editPatient(this)">Edit</button></td>
+            `;
+            tableBody.appendChild(newRow);
+
+            form.reset();
+        }
+
+        function editPatient(button) {
+            const row = button.parentNode.parentNode;
+            const cells = row.querySelectorAll('td');
+
+            document.getElementById('name').value = cells[0].innerText;
+            document.getElementById('age').value = cells[1].innerText;
+            document.getElementById('gender').value = cells[2].innerText;
+            document.getElementById('ward').value = cells[3].innerText;
+            document.getElementById('bed').value = cells[4].innerText;
+            document.getElementById('admissionDate').value = cells[5].innerText;
+            document.getElementById('diagnosis').value = cells[6].innerText;
+            document.getElementById('plan').value = cells[7].innerText;
+            document.getElementById('followUp').value = cells[8].innerText;
+            document.getElementById('notes').value = cells[9].innerText;
+            document.getElementById('doctor').value = cells[10].innerText;
+
+            row.remove();
+        }
+    </script>
+</body>
+</html>
